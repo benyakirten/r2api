@@ -17,6 +17,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3",
         "License :: MIT License",
         "Operating System :: OS Independent",
+        "Development Status :: 2 - Pre-Alpha"
     ],
     python_requires='>=3.6',
 )
