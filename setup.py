@@ -16,7 +16,7 @@ setuptools.setup(
     description="A small package to translate an Italian recipe and its units into English using Google Translate",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/pypa/sampleproject",
+    url="https://github.com/benyakirten/r2api",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
