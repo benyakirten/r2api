@@ -7,6 +7,11 @@ Feed a URL (depending on which are available; each one has to be manually coded)
 ## How do I install it?
     pip install r2api
 
+### Other dependencies
+This package needs requests and bs4 installed
+    pip install bs4
+    pip install requests
+
 ## How to use it generally:
 
     import r2api
