@@ -1,11 +1,16 @@
 import setuptools
 
+requirements = []
+with open('requirements.txt', 'r') as fh:
+    for line in fh:
+        requirements.append(line.strip())
+
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name="r2api",
-    version="0.1.2",
+    version="0.1.3",
     author="Benyakir Horowitz",
     author_email="benyakir.horowitz@gmail.com",
     description="A small package to translate an Italian recipe and its units into English using Google Translate",
@@ -19,5 +24,6 @@ setuptools.setup(
         "Operating System :: OS Independent",
         "Development Status :: 2 - Pre-Alpha"
     ],
-    python_requires='>=3.6'
+    python_requires='>=3.6',
+    install_requires = requirements
 )

@@ -8,9 +8,8 @@ Feed a URL (depending on which are available; each one has to be manually coded)
     pip install r2api
 
 ### Other dependencies
-This package needs requests and bs4 installed
-    pip install bs4
-    pip install requests
+This package needs several packages. bs4, Beautiful Soup and Requests are included in requirements.txt. Because google-cloud-translate is much larger (and is only used for one part of the functionality that requires a separate API key), it isn't included. But it can be installed with the following command:
+    pip install google-cloud-translate
 
 ## How to use it generally:
 
@@ -74,11 +73,12 @@ Note: for the following two methods, the BeautifulSoup soup should be parsed wit
 either simply as:
     import r2api
     converted_units = r2api.convert_units_prep(instruction)
-or explciitly (and to reduce load times):
+or explicitly (and to reduce load times):
     import r2api.utilities.unit_conversion as uc
     converted_units = uc.convert_units_prep(instruction)
 
 The two most important methods are for converting units. The first is for the ingredients:
+
     convert_units_ing(quantity: string, unit: string): float, string
 
 > This is the process called from within get_ingredients_g_z to convert the quantities and units
@@ -105,13 +105,23 @@ The method to call:
 
 ### Known issues
 1. Occasionally words will not be translated correctly.
+2. A few ingredients on giallozafferano.it will have both a note and a vulgar fraction. The RegEx have difficulty parsing this. I haven't run into any examples except in passing. Once I can find them, I will work on a fix.
 
 ### Ideas for improvement
 1. Rounding to sensible quantities, i.e. 1.5 lbs instead of 1.34 lbs
 2. Break apply_translation up into smaller functions (would also allow for better testing)
+3. Add more Converters
+4. Some recipes for Giallo Zafferano have quantities/units in the ingredient notes that can be converted into imperial units. As with known issue 2 above, the difficulty is finding the recipes that lead to errors.
 
 ### Version list
 0.1.0: First release
+
+0.1.3:
+1. Included requirements.txt and MANIFEST.in for test files
+2. Fixed an error in the GZConverter that failed to detect ingredients with both a vulgar fraction and a unit
+3. Increased subgroups of GZConverter RegEx parsing ingredients from 3 to 5 to allow capture of notes with units inside. In the case of unit conversion being enabled, these are converted from metric to imperial too.
+4. Created a redundant backup for empty units in the GZConverter
+5. Updated tests to include examples featuring each of the above ingredients
 
 ## Why?
 I made this originally as several modules I would find useful for myself because I am often translating Italian recipes into English and changing the metric quantities in the recipe into imperial units. I saw it as an opportunity to release my first Python package. I tried to document and comment my code as best possible, but this is among my first projects that I have made completely on my own from the ground up. Please contact me or make a pull request on Github if there is a problem.

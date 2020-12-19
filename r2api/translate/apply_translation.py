@@ -1,4 +1,4 @@
-import json, os, copy
+import json, os, copy, sys
 
 def translate_data(data, *, source_language = "it", target_language = "en", client = False, custom_replace = None):
     """
@@ -55,6 +55,9 @@ def translate_data(data, *, source_language = "it", target_language = "en", clie
             f"https://translation.googleapis.com/language/translate/v2/?key={API_KEY}&target={target_language}&source={source_language}&format=text&q={prep_string}"
         )
     else:
+        if 'google.cloud' not in sys.modules:
+            raise ImportError("Google Cloud Translate module not found")
+
         from google.cloud import translate_v2 as translate
 
         translate_client = translate.Client()

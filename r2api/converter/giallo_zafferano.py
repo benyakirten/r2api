@@ -141,7 +141,7 @@ class GZConverter:
         #     If the special word exists, group(2) will be None
         # 3. group(3) will be the unit or the special word
         #     group(3) should never be none--it would mean the ingredient doesn't have any words
-        q_u_regex = re.search('(\(.*\)|\D*)?(\d*[,\./]?[\d]*)[\s]*(\S*)', quantity_unit)
+        q_u_regex = re.search('(\(.*\)|\D*)?(\d*[,\./]?[\d]*)[\s]*(\D*)(\d+)?[\s]*(\D+)?', quantity_unit)
 
         # Again, we check if it worked; an blank regex makes the ingredient get appended as []
         if q_u_regex:
@@ -155,6 +155,11 @@ class GZConverter:
             # sometimes the note is not written with parenthesies
             # But because of that whole addendum, sometimes group(1)
             # ends up empty but not None
+
+            # Note added was made for the case that there is a group 4
+            # We need to know if the name was added so that
+            # group(1) isn't attached two times
+            note_added = False
             if q_u_regex.group(1) and q_u_regex.group(1) != '':
                 # This is for the special case where there is BOTH
                 # a note and a special word
@@ -164,19 +169,25 @@ class GZConverter:
                         special_or_fraction_in_group1 = True
                         temp = q_u_regex.group(1).split(special_word)
                         name += f" {temp[0]}"
+                        note_added = True
                         quantity = special_words[special_word]
-                        unit = "n/a"
+                        if len(temp) > 1:
+                            unit = temp[1]
+                        else:
+                            unit = "n/a"
                 
                 # This is the same but for a note and a vulgar fraction
                 for fraction in especially_vulgar_fractions.keys():
-                    if special_word in q_u_regex.group(1):
+                    if fraction in q_u_regex.group(1):
                         special_or_fraction_in_group1 = True
                         temp = q_u_regex.group(1).split(fraction)
                         name += f" {temp[0]}"
+                        note_added = True
                         quantity = especially_vulgar_fractions[fraction]
-                        unit = "n/a"
-                # and q_u_regex.group(1) not in special_words \
-                # and q_u_regex.group(1) not in especially_vulgar_fractions:
+                        if len(temp) > 1:
+                            unit = temp[1]
+                        else:
+                            unit = "n/a"
                 # Note: the vulgar fractions are counted by regex as letters, not numbers, so it gets caught in the \D*
 
                 # This is for a certain class where there is no quantity or unit, just a note
@@ -190,6 +201,7 @@ class GZConverter:
                         unit = "n/a"
                     else:
                         name += f" {q_u_regex.group(1)}"
+                        note_added = True
                     # The name has already been created, so we append the note to it
                     # i.e. pollo -> pollo(scongelato)
                 name = name.strip()
@@ -204,7 +216,6 @@ class GZConverter:
                 unit = 'n/a'
             # Case 2: There's is a vulgar fraction
             # i.e. ¼ -> group(1) = ¼; group(2) and (3) = None;
-            # i.e. ¼kg -> group(1) = ¼; group(2) = None; group(3) = kg
             elif q_u_regex.group(1) and q_u_regex.group(1) in especially_vulgar_fractions:
                 quantity = especially_vulgar_fractions[q_u_regex.group(1)]
                 # This statement is saying: the quantity is equall to the conversion
@@ -223,6 +234,47 @@ class GZConverter:
             elif q_u_regex.group(2) and q_u_regex.group(3):
                 quantity = q_u_regex.group(2)
                 unit = q_u_regex.group(3)
+            
+            # Added in 0.1.3:
+            # This means there was a note containing some sort of measure in it
+            # group(4) just tests that the measurement ends with a number
+            if q_u_regex.group(4):
+                # The note will be added to the name
+                note = ' '
+                # The quantity will be the last group of \d, everything before that is
+                # part of the note
+                quantity = q_u_regex.group(4)
+                # The unit will most likely be n/a, but there is one last group
+                # that it could be
+                if q_u_regex.group(5):
+                    unit = q_u_regex.group(5)
+                else:
+                    unit = 'n/a'
+                # If group(1) has already been added to the name, it shouldn't be again
+                if q_u_regex.group(1) and not note_added:
+                    # The preponderance of spaces is because we don't know when
+                    # spaces will be needed
+                    # The extras will get stripped at the end
+                    note += f" {q_u_regex.group(1)} "
+                if q_u_regex.group(2):
+                    note += f" {q_u_regex.group(2)} "
+                if q_u_regex.group(3):
+                    note += f" {q_u_regex.group(3)} "
+                note = note.replace("  ", " ")
+                # This is to find the unit measurement inside of the note
+                secondary_u_q = re.search('(\d+)(\s)([gl])', note)
+                if secondary_u_q:
+                    sec_qt = secondary_u_q.group(1)
+                    sec_unit = secondary_u_q.group(3)
+                    # Nowhere else will the name get converted
+                    # Hence it's being done here
+                    if convert_units:
+                        sec_qt, sec_unit = convert_units_ing(sec_qt, sec_unit)
+                    # Place them back inside -- without the space
+                    note = note.replace(secondary_u_q[0], f" {sec_qt}{sec_unit}")
+                if name[-1] == 'e':
+                    name += ' '
+                name += note.strip()
         
         # With the units identified, they can be converted
         if convert_units:
@@ -233,6 +285,11 @@ class GZConverter:
         # This is by far the easiest place to do the .0 to int conversion
         if float_dot_zero(quantity):
             quantity = int(quantity)
+
+        # With the modifications in 0.1.3, sometimes the units don't
+        # get caught in the other regex that allow for them
+        if unit == '':
+            unit = 'n/a'
 
         try:
             final_ingredient = [name, round(quantity, 2), unit]
