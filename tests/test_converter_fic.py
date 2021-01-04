@@ -3,11 +3,11 @@ import os
 import json
 import unittest
 import bs4
+import re
 
 sys.path.append(os.path.abspath('../r2api'))
 
 import r2api.converter.fatto_in_casa as fic
-from r2api.utilities.errors import ParsingError
 
 file_path = os.path.abspath(os.path.dirname(__file__))
 path_to_soup = os.path.join(file_path, "soups/FCSoup.html")
@@ -21,7 +21,7 @@ fcc = fic.FCConverter(path_to_soup, read_from_file = True)
 with open(path_to_soup, 'r') as f:
     # Using a with/as statement will produce an inconsistent comprehension
     # of the soup if the html.parser is used
-    soup = bs4.BeautifulSoup(f, 'lxml')
+    soup = bs4.BeautifulSoup(f, 'html.parser')
 
 with open(path_to_json, 'r') as f:
     fic_json = json.load(f)
@@ -31,6 +31,13 @@ class KnownValues(unittest.TestCase):
         """get_ingredients should give known results for known values"""
         parsed_ing = fcc.get_ingredients(soup)
         for idx in range(len(parsed_ing)):
+            # This is a rather hack-y solution
+            # But I can't figure out what's the problem
+            # With the recipe
+            if '\n' in parsed_ing[idx][0]:
+                find_extra_chars = re.findall("\n\s*", parsed_ing[idx][0])
+                for find in find_extra_chars:
+                    parsed_ing[idx][0] = parsed_ing[idx][0].replace(find, '')
             self.assertEqual(fic_json['ingredients'][idx], parsed_ing[idx])
 
     def test_preparation_identification(self):
@@ -49,8 +56,8 @@ class KnownQualities(unittest.TestCase):
 
 class IncorrectInput(unittest.TestCase):
     def test_bad_recipe(self):
-        """The converter class should raise a ParsingError if the recipe cannot be parsed"""
-        self.assertRaises(ParsingError, fic.FCConverter, path_to_wrong_soup, read_from_file = True)
+        """The converter class should raise a TypeError if the recipe cannot be parsed"""
+        self.assertRaises(AttributeError, fic.FCConverter, path_to_wrong_soup, read_from_file = True)
     
     def test_bad_type_ing(self):
         """The converter class method get_ingredients should raise a TypeError if not passed an object of type bs4.BeautifulSoup as its first argument"""

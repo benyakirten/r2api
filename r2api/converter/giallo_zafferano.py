@@ -1,10 +1,15 @@
+import re
 from bs4 import BeautifulSoup
-import requests, re, json, copy
 
-from ..utilities.unit_conversion import convert_units_prep, convert_units_ing, float_dot_zero
-from ..utilities.errors import ParsingError
+from .base_converter import BaseConverter
+from ..utilities.unit_conversion import (
+    convert_units_prep,
+    convert_units_name,
+    convert_units_ing,
+    float_dot_zero
+)
 
-class GZConverter:
+class GZConverter(BaseConverter):
     """
     This class will take a URL of a Giallo Zafferano recipe and and produce a dictionary accessible at .recipe with the following qualities
     recipe['name']: string
@@ -12,74 +17,13 @@ class GZConverter:
     recipe['ingredients']: list of the following format
         [string(name), float(quantity), string(unit)]
     recipe['preparation']: list of the steps to make the recipe
-
-    The methods write_soup_to and write_recipe_to writes the soup and recipe respectively to the path passed in their arguments, the former as the BS4 object prettified, the latter as a JSON object
-
-    Optional parameters: convert_units: bool = True
-    If True, units and their quantities in both ingredients and preparation will be converted into American imperial units. If False, they will not be converted
     """
-    def __init__(self, url = "https://ricette.giallozafferano.it/Zuppa-di-ceci.html", *, convert_units = True, read_from_file = False):
-        if read_from_file:
-            with open(url, 'r') as f:
-                self.soup = BeautifulSoup(f, 'html.parser')
-        else:
-            r = requests.get(url,
-                headers={'User-agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0'})
-            self.soup = BeautifulSoup(r.content, 'html.parser')
 
-        self.recipe = {}
-        try:
-            self.recipe['name'] = self.soup.find('title').text.strip().replace("\n", "")
-        except:
-            raise ParsingError(f"Unable to parse recipe title at: {url}")
+    def get_title(self, soup):
+        return soup.find('title').text.strip().replace("\n", "")
 
-        try:
-            self.recipe['image'] = self.soup.find('source').attrs['data-srcset']
-        except:
-            raise ParsingError(f"Unable to parse recipe image at: {url}")
-
-        try:
-            self.recipe['ingredients'] = self.get_ingredients(self.soup, convert_units)
-        except:
-            raise ParsingError(f"Unable to parse recipe ingredients at: {url}")
-        
-        try:
-            self.recipe['preparation'] = self.get_preparation(self.soup, convert_units)
-        except:
-            raise ParsingError(f"Unable to parse recipe preperation at: {url}")
-
-    def __repr__(self):
-        return repr(self.recipe)
-
-    def elaborate(self):
-        temp_name = f"{self.recipe['name']}\n"
-        temp_image = f"{self.recipe['image']}\n"
-        temp_ing = ""
-        for i in self.recipe['ingredients']:
-            temp_ing += f"{i[0]}, {i[1]}, {i[2]}\n"
-        temp_prep = ""
-        for i in self.recipe['preparation']:
-            temp_prep += f"{i}\n"
-        return f"{temp_name}\n{temp_image}\n{temp_ing}\n{temp_prep}"
-
-    def __getitem__(self, key):
-        return self.recipe[key]
-
-    def __setitem__(self, key, item):
-        self.recipe[key] = item
-
-    def __call__(self):
-        return self.recipe
-
-    def write_soup_to(self, path):
-        """Write the soup to the path"""
-        with open(path, 'w') as f:
-            f.write(self.soup.prettify())
-        
-    def write_recipe_to(self, path, indent = 4):
-        """Write the recipe to the path as a json object, indent is customizable"""
-        with open(path, 'w') as f:
-                f.write(json.dumps(self.recipe, indent = indent))
+    def get_image(self, soup):
+        return soup.find('source').attrs['data-srcset']
 
     def get_ingredients(self, soup, convert_units = True):
         """
@@ -279,6 +223,7 @@ class GZConverter:
         # With the units identified, they can be converted
         if convert_units:
             quantity, unit = convert_units_ing(quantity, unit)
+            name = convert_units_name(name)
         # Sometimes the quantity cannot be be rounded because it is not a number
         # even after the conversion
 

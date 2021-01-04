@@ -8,16 +8,27 @@ def convert_units_ing(quantity, unit):
     try:
         quantity = str(quantity)
     except:
-        raise TypeError("quantity cannot be coerced into a string")
+        raise TypeError(f"quantity {quantity} cannot be cast as a string")
+    try:
+        float(quantity)
+    except:
+        if '/' in quantity:
+            try:
+                # This quantity doesn't matter
+                # but if the '/' can be replaced easily
+                # that's all we care about
+                float(quantity.replace('/', '.'))
+            except:
+                raise TypeError(f"quantity {quantity} cannot be cast as a float")
 
     try:
         unit = str(unit)
     except:
-        raise TypeError("unit cannot be coerced into a string")
+        raise TypeError(f"unit {quantity} cannot be cast as a string")
 
     # Dict is in the format:
     # key : (ratio, translated_key)
-    # Constants are not needed
+    # Unlike below, constants are not needed
     # because temperatures are not passed in
     unit_conversion = {
         'g': (0.00220462, 'lb'),
@@ -29,7 +40,9 @@ def convert_units_ing(quantity, unit):
         'ml': (33.8140227 / 1000, 'fl oz'),
         'millilitri': (33.8140227 / 1000, 'fl oz')
     }
+
     unit_lower = unit.lower()
+
     if unit_lower in unit_conversion:
         # The quantity can sometimes contain , instead of .
         # because decimals are written with a comma
@@ -48,6 +61,27 @@ def convert_units_ing(quantity, unit):
             quantity = round(float(quantity), 2)
         finally:
             return (quantity, unit)
+
+def convert_units_name(name):
+    if not isinstance(name, str):
+        raise TypeError("name of ingredient must be a string")
+    
+    # If a unit gets put into the name, this method seeks to find it
+    # The regex is pretty simple
+    regex = '(\d+)\s?(\w+)'
+    for match in re.findall(regex, name):
+        # This is later used to match the replaced/replacing text strings
+        convertable_quantity, convertable_unit = match[0], match[1]
+        converted_quantity, converted_unit = convert_units_ing(match[0], match[1])
+
+        # If there hasn't been any conversion, there is no need to proceed
+        # This is here to double check that we're not needlessly converting units
+        if convertable_quantity != converted_quantity and convertable_unit != converted_unit:
+            # The replace method requires two strings, however the converted_quantity
+            # Has been cast to float for other purposes
+            name = name.replace(convertable_quantity, str(converted_quantity))
+            name = name.replace(convertable_unit, converted_unit)
+    return name
 
 def convert_units_prep(prep):
     """
@@ -83,7 +117,12 @@ def convert_units_prep(prep):
     # as the former and the latter as the latter
     # i.e. 1,5l isn't treated as 1, as not a unit and 5l
     # group(1) will always be the quantity, group(2) always the unit
-    regex = ['(\d+)([a-zA-Z°]+)', '(\d+[,\.]?\d*[\/\-x]\d+[,\.]?\d*)[\s]?([a-zA-Z°]+)', '(\d+[,\.\/\-x]\d+)[\s]?([a-zA-Z°]+)', '[^,\./-x](\d+)[\s]?([a-zA-Z°]+)']
+    regex = [
+        '(\d+)([a-zA-Z°]+)',
+        '(\d+[,\.]?\d*[\/\-x]\d+[,\.]?\d*)[\s]?([a-zA-Z°]+)',
+        '(\d+[,\.\/\-x]\d+)[\s]?([a-zA-Z°]+)',
+        '[^,\./-x](\d+)[\s]?([a-zA-Z°]+)'
+    ]
     
     for ex in regex:
         match = re.findall(ex, return_string)

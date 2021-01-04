@@ -58,8 +58,8 @@ class KnownQualities(unittest.TestCase):
 
 class IncorrectInput(unittest.TestCase):
     def test_bad_recipe(self):
-        """The converter class should raise a a ParsingError if the recipe cannot be parsed"""
-        self.assertRaises(ParsingError, gz.GZConverter, path_to_wrong_soup, read_from_file = True)
+        """The converter class should raise an AttributeError if the recipe cannot be parsed"""
+        self.assertRaises(AttributeError, gz.GZConverter, path_to_wrong_soup, read_from_file = True)
     
     def test_bad_type_ing(self):
         """The converter class method get_ingredients should raise a TypeError if not passed an object of type bs4.BeautifulSoup as its first argument"""

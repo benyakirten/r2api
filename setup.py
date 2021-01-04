@@ -10,10 +10,10 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="r2api",
-    version="0.1.3",
+    version="0.1.4",
     author="Benyakir Horowitz",
     author_email="benyakir.horowitz@gmail.com",
-    description="A small package to translate an Italian recipe and its units into English using Google Translate",
+    description="A small package to translate an Italian recipe and its units into English and imperial units using Google Translate",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/benyakirten/r2api",
