@@ -107,13 +107,14 @@ The method to call:
 
 ### Known issues
 1. Occasionally words will not be translated correctly.
-2. If reading from a file, FCConverter will not parse the recipe correctly.
+2. If reading from a file, FCConverter will not parse the recipe correctly sometimes.
 
 ### Ideas for improvement
 1. Rounding to sensible quantities, i.e. 1.5 lbs instead of 1.34 lbs
 2. Break apply_translation up into smaller functions (would also allow for better testing)
-3. Refactoring the existing converters into smaller functions
-4. Add more Converters
+3. Add functionality for other translators besides Google Cloud
+4. Refactoring the existing converters into smaller functions
+5. Add more Converters
 
 ### Version list
 0.1.0: First release
@@ -128,6 +129,12 @@ The method to call:
 0.1.4:
 1. Added a BaseConverter class to keep the code more consistent and DRY
 2. Added a convert_units_name method to utilities.unit_conversion for the odd case in recipes that units are part of a note and therefore put in the name of an ingredient
+
+0.1.5:
+1. Made BaseConverter and some of its methods abstract
+2. Giallo Zafferano changed how the images were found on its recipes, now using a link tag instead of a source tag - the GZ Converted has been adjusted accordingly.
+3. A new converter! For one of the GZ Blogs, Molliche Di Zucchero. Tests have not been written, nor has it been seen for which other blogs it works.
+4. License updated for 2021
 
 ## Why?
 I made this originally as several modules I would find useful for myself because I am often translating Italian recipes into English and changing the metric quantities in the recipe into imperial units. I saw it as an opportunity to release my first Python package. I tried to document and comment my code as best possible, but this is among my first projects that I have made completely on my own from the ground up. Please contact me or make a pull request on Github if there is a problem.

@@ -1,7 +1,8 @@
+from abc import ABC, abstractmethod
 from bs4 import BeautifulSoup
 import requests, json, copy
 
-class BaseConverter:
+class BaseConverter(ABC):
     """
     This is the base class of converter.
     It provides basic functions (other than the actual conversions) to keep the code more DRY.
@@ -70,15 +71,19 @@ class BaseConverter:
         with open(path, 'w') as f:
             f.write(json.dumps(self.recipe, indent = indent))
 
-    # Dummy methods to be replaced by the converter classes
+    # Abstract methods
+    @abstractmethod
     def get_title(self, soup):
-        return soup
-
+        pass
+    
+    @abstractmethod
     def get_image(self, soup):
-        return soup
+        pass
 
+    @abstractmethod
     def get_ingredients(self, soup, convert_units = True):
-        return soup
+        pass
 
+    @abstractmethod
     def get_preparation(self, soup, convert_units = True):
-        return soup
+        pass

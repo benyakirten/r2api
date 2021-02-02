@@ -23,7 +23,15 @@ class GZConverter(BaseConverter):
         return soup.find('title').text.strip().replace("\n", "")
 
     def get_image(self, soup):
-        return soup.find('source').attrs['data-srcset']
+        try:
+            image = soup.find('source').attrs['data-srcset']
+        except:
+            # It seems that the method of finding the image has changed
+            for link in soup.find_all('link', {"as": "image"}):
+                if link['href'] and re.search('\.(jpg|jpeg|png|bmp)$', link['href']):
+                    return link['href']
+            # Backup
+            return "IMAGE_NOT_FOUND"
 
     def get_ingredients(self, soup, convert_units = True):
         """
