@@ -19,12 +19,11 @@ def convert_units_ing(quantity, unit):
                 # that's all we care about
                 float(quantity.replace('/', '.'))
             except:
-                raise TypeError(f"quantity {quantity} cannot be cast as a float")
-
+                return (quantity, unit)
     try:
         unit = str(unit)
     except:
-        raise TypeError(f"unit {quantity} cannot be cast as a string")
+        return (quantity, unit)
 
     # Dict is in the format:
     # key : (ratio, translated_key)
@@ -110,7 +109,7 @@ def convert_units_prep(prep):
         'mm': (0.03937, 0, 'inches'),
         'm': (39.37, 0, 'inches')
     }
-    # When there is a unit, it comes in one of twoformats:
+    # When there is a unit, it comes in one of two formats:
     # 1. quantityunit - i.e. 300g
     # 2. quantity(any of , . / - x)fraction(space)unit - i.e. 1,5 l
     # Regex 3 is so the expression correctly classifies something
@@ -118,10 +117,8 @@ def convert_units_prep(prep):
     # i.e. 1,5l isn't treated as 1, as not a unit and 5l
     # group(1) will always be the quantity, group(2) always the unit
     regex = [
-        '(\d+)([a-zA-Z°]+)',
-        '(\d+[,\.]?\d*[\/\-x]\d+[,\.]?\d*)[\s]?([a-zA-Z°]+)',
-        '(\d+[,\.\/\-x]\d+)[\s]?([a-zA-Z°]+)',
-        '[^,\./-x](\d+)[\s]?([a-zA-Z°]+)'
+        '[^,\.\/-x](\d+)(\s?)([a-zA-Z°]+)',
+        '(\d+[,\.\/]?\d*[\/\-x]\d+[,\.\/]?\d*)(\s?)([a-zA-Z°]+)'
     ]
     
     for ex in regex:
@@ -134,68 +131,61 @@ def convert_units_prep(prep):
                 # we will get lots of false positives
                 # they'll get ignored if they're not
                 # of the appropriate form
-                if group[1].lower() in unit_conversions:
-
+                if group[2].lower() in unit_conversions:
                     # The unit is just the converted unit name and the simplest to replace
-                    conv_unit = unit_conversions[group[1]][2]
-                    
-                    # Regex[1], because of the , . - needs special treatment
-                    if ex == regex[1] or ex == regex[2]:
-                        # We are doing the same replacement that we did above
-                        # replacing , with . so it can be converted to a float
-                        amount_punctuation_replaced = group[0].replace(',', '.')
-                        try:
-                            # This is the simplest case: that it's something like 1,5 (now 1.5)
-                            # So we can just make it into a float
-                            amount = float(amount_punctuation_replaced)
-                            # The converted quantity is equal to the float times the scalar plus the constant
-                            conv_amount = round((amount * unit_conversions[group[1]][0]) + unit_conversions[group[1]][1], 2)
-                            # We are passing it to the same function to simplify it so we don't have 0.14 lb
-                            # Unfortunately we have to repeat it once for every different situation
-                            conv_amount, conv_unit = simplify_units(conv_amount, conv_unit)
-                        # Except occurs if it's not a , but something else
-                        # such as - as in 2-3
-                        except:
-                            # Therefore we are preserving the two digits as separate entities
-                            # But otherwise doing the same action
-                            # This regex should capture both 1-2 and 1.2-5.2
-                            digits = re.findall('(\d+[,\.]?\d*)(\D)(\d+[,\.]?\d*)', amount_punctuation_replaced)[0]
-                            first_digit = round((float(digits[0]) * unit_conversions[group[1]][0]) + unit_conversions[group[1]][1], 2)
-                            second_digit = round((float(digits[2]) * unit_conversions[group[1]][0]) + unit_conversions[group[1]][1], 2)
-                            temp_first_digit, first_conv_unit = simplify_units(first_digit, conv_unit)
-                            temp_second_digit, second_conv_unit = simplify_units(second_digit, conv_unit)
-                            # In the rare circumstance that simplify_units will give different units
-                            # for a range, we ignore the converison but must dot zero it manually
-                            # because simplify_units does it usually
-                            if first_conv_unit == second_conv_unit:
-                                first_digit = temp_first_digit
-                                second_digit = temp_second_digit
-                                conv_unit = first_conv_unit # Whichever of the two
-                            else:
-                                if float_dot_zero(first_digit):
-                                    first_digit = int(first_digit)
-                                if float_dot_zero(second_digit):
-                                    second_digit = int(second_digit)
-                            conv_amount = f"{first_digit}{digits[1]}{second_digit}"
-                            # In this case, we are giving the
-                            # average of the numbers; this could be improved
-                    else:
-                        amount = float(group[0])
-                        conv_amount = round((amount * unit_conversions[group[1]][0]) + unit_conversions[group[1]][1], 2)
+                    conv_unit = unit_conversions[group[2]][2]
+                    # We are doing the same replacement that we did above
+                    # replacing , with . so it can be converted to a float
+                    amount_punctuation_replaced = group[0].replace(',', '.')
+                    try:
+                        # This is the simplest case: that it's something like 1,5 (now 1.5)
+                        # So we can just make it into a float
+                        amount = float(amount_punctuation_replaced)
+                        # The converted quantity is equal to the float times the scalar plus the constant
+                        conv_amount = round((amount * unit_conversions[group[2]][0]) + unit_conversions[group[2]][1], 2)
+                        # We are passing it to the same function to simplify it so we don't have 0.14 lb
+                        # Unfortunately we have to repeat it once for every different situation
                         conv_amount, conv_unit = simplify_units(conv_amount, conv_unit)
-                    # This was done to keep the code DRY, but regex[1] and [2] have spaces
-                    # that are needed for the matching
+                    # Except occurs if it's not a , but something else
+                    # such as - as in 2-3
+                    except:
+                        # Therefore we are preserving the two digits as separate entities
+                        # But otherwise doing the same action
+                        # This regex should capture both 1-2 and 1.2-5.2
+                        digits = re.findall('(\d+[,\.\/]?\d*)(\D)(\d+[,\.\/]?\d*)', amount_punctuation_replaced)[0]
+                        # So we split them up into two digits
+                        first_digit = round((float(digits[0]) * unit_conversions[group[2]][0]) + unit_conversions[group[2]][1], 2)
+                        second_digit = round((float(digits[2]) * unit_conversions[group[2]][0]) + unit_conversions[group[2]][1], 2)
+                        temp_first_digit, first_conv_unit = simplify_units(first_digit, conv_unit)
+                        temp_second_digit, second_conv_unit = simplify_units(second_digit, conv_unit)
+                        # In the rare circumstance that simplify_units will give different units
+                        # for a range, we ignore the converison but must dot zero it manually
+                        # because simplify_units does it usually
+                        if first_conv_unit == second_conv_unit:
+                            first_digit = temp_first_digit
+                            second_digit = temp_second_digit
+                            conv_unit = first_conv_unit # Whichever of the two
+                        else:
+                            if float_dot_zero(first_digit):
+                                first_digit = int(first_digit)
+                            if float_dot_zero(second_digit):
+                                second_digit = int(second_digit)
+                        conv_amount = f"{first_digit}{digits[1]}{second_digit}"
+                        # In this case, we are giving the
+                        # average of the numbers; this could be improved
 
-                    if ex != regex[0]:
-                        replaced_seq = f"{group[0]} {group[1]}"
-                        replacing_seq = f"{conv_amount} {conv_unit}"
-                    else:
-                        replaced_seq = f"{group[0]}{group[1]}"
-                        replacing_seq = f"{conv_amount}{conv_unit}"
+                    # Now that we've done the conversions, we need to replace the original text
+                    # with the converted, so we're making a string to find the original and do this
 
-                    # Every iteration, we're replacing the converted
+                    # Forming the string:
+                    # N.B. Sometimes we need to replace 1,5 l and sometimes 1,5l
+                    # group[1] will always be either a space or not - for what we need
+                    replaced_seq = f"{group[0]}{group[1]}{group[2]}"
+                    replacing_seq = f"{conv_amount}{group[1]}{conv_unit}"
                     return_string = return_string.replace(replaced_seq, replacing_seq)
 
+                    # It seems to be only with temperature, but sometimes we get both degrees and
+                    # a unit marking. Hence the need for this line
                     if return_string.find("° C "):
                         return_string = return_string.replace("° C ", "° F ")
     return return_string

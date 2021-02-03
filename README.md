@@ -136,5 +136,9 @@ The method to call:
 3. A new converter! For one of the GZ Blogs, Molliche Di Zucchero. Tests have not been written, nor has it been seen for which other blogs it works.
 4. License updated for 2021
 
+0.1.6:
+1. Changed convert_units_ing in the unit_conversion.py utility file from throwing errors to just returning the unconverted data if it could not be coerced correctly.
+2. Overhauled convert_units_prep in abovementioned file so it uses only two regex, and spaces are correctly accounted for.
+
 ## Why?
 I made this originally as several modules I would find useful for myself because I am often translating Italian recipes into English and changing the metric quantities in the recipe into imperial units. I saw it as an opportunity to release my first Python package. I tried to document and comment my code as best possible, but this is among my first projects that I have made completely on my own from the ground up. Please contact me or make a pull request on Github if there is a problem.

@@ -45,15 +45,19 @@ class MZConverter(BaseConverter):
         """
         ingredients_div = soup.find('div', {'class': 'recipe-ingredients'})
         all_items = ingredients_div.find_all('div', {'class': 'recipe-ingredient-item'})
-        # To use iteration to keep the code DRY in the face of highly repetitive sections:
-        ingredients = []
         sections = ['name', 'number', 'unit']
-        # Potentially this could be replaced with a use of the itertools, but that'll come later
-        for item in all_items:
-            ing = []
-            for section in sections:
-                ing.append(self._get_ingredient_final(section, item))
-            ingredients.append(ing)
+        ingredients = [[_get_ingredient_final(section, item) for section in sections] for item in all_items]
+        
+        # The above two lines replaced the following 8 lines:
+        # Another solution could involve itertools.product, but nested list comprehensions seemed easier
+        # ingredients = []
+        # sections = ['name', 'number', 'unit']
+        # for item in all_items:
+        #     ing = []
+        #     for section in sections:
+        #         ing.append(self._get_ingredient_final(section, item))
+        #     ingredients.append(ing)
+
         if convert_units:
             converted_units = []
             for ingredient in ingredients:

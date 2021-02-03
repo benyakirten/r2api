@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from bs4 import BeautifulSoup
-import requests, json, copy
+import requests, json
 
 class BaseConverter(ABC):
     """
@@ -19,21 +19,24 @@ class BaseConverter(ABC):
         write_recipe_to writes the parsed recipe object as a JSON object to the relative path specified
     NOTE: The recipe will not be parsed whatsoever in this base class.
     """
-    def __init__(self, url = 'https://www.google.com/', *, convert_units = True, read_from_file = False):
+
+    def __init__(self, url='https://www.google.com/', *, convert_units=True, read_from_file=False):
         if read_from_file:
             with open(url, 'r') as f:
                 self.soup = BeautifulSoup(f, 'html.parser')
         else:
             # Yes, fellow robot--err, a robot! Yes, hello. I'm a HUMAN. Please let me access your website.
             r = requests.get(url,
-                headers = {'User-agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0'})
+                headers={'User-agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0'})
             self.soup = BeautifulSoup(r.content, 'html.parser')
 
         self.recipe = {}
         self.recipe['name'] = self.get_title(self.soup)
         self.recipe['image'] = self.get_image(self.soup)
-        self.recipe['ingredients'] = self.get_ingredients(self.soup, convert_units)
-        self.recipe['preparation'] = self.get_preparation(self.soup, convert_units)
+        self.recipe['ingredients'] = self.get_ingredients(
+            self.soup, convert_units)
+        self.recipe['preparation'] = self.get_preparation(
+            self.soup, convert_units)
 
     def __repr__(self):
         return repr(self.recipe)
@@ -65,25 +68,25 @@ class BaseConverter(ABC):
         """Write the soup to the path"""
         with open(path, 'w') as f:
             f.write(self.soup.prettify())
-        
-    def write_recipe_to(self, path, indent = 4):
+
+    def write_recipe_to(self, path, indent=4):
         """Write the recipe to the path as a JSON object, indent is customizable"""
         with open(path, 'w') as f:
-            f.write(json.dumps(self.recipe, indent = indent))
+            f.write(json.dumps(self.recipe, indent=indent))
 
     # Abstract methods
     @abstractmethod
     def get_title(self, soup):
         pass
-    
+
     @abstractmethod
     def get_image(self, soup):
         pass
 
     @abstractmethod
-    def get_ingredients(self, soup, convert_units = True):
+    def get_ingredients(self, soup, convert_units=True):
         pass
 
     @abstractmethod
-    def get_preparation(self, soup, convert_units = True):
+    def get_preparation(self, soup, convert_units=True):
         pass
