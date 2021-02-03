@@ -46,7 +46,7 @@ class MZConverter(BaseConverter):
         ingredients_div = soup.find('div', {'class': 'recipe-ingredients'})
         all_items = ingredients_div.find_all('div', {'class': 'recipe-ingredient-item'})
         sections = ['name', 'number', 'unit']
-        ingredients = [[_get_ingredient_final(section, item) for section in sections] for item in all_items]
+        ingredients = [[self._get_ingredient_final(section, item) for section in sections] for item in all_items]
         
         # The above two lines replaced the following 8 lines:
         # Another solution could involve itertools.product, but nested list comprehensions seemed easier
