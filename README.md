@@ -36,7 +36,7 @@ The Converter classes uses BeautifulSoup and RegEx to parse an appropriate websi
     recipe['name']: string
     recipe['image']: string
     recipe['ingredients']: list -
-        [name: string, quantity: float | int, unit: string]
+        [name: string, quantity: float | int | string*, unit: string]
     recipe['preparation']: list -
         [step: string]
 
@@ -45,6 +45,16 @@ Converters have two optional parameters other than the URL, both keyword-only ar
 1. convert_units: a boolean set to True by default. If set to false, the units will not be converted from metric to imperial units.
 2. read_from_file: a boolean set to False by default. If set to True, the path is assumed to be a relative path to a file containing the appropriate bs4 soup (of the same style as created when the write_soup_to method is invoked)
 3. Note also that the Converter class has limited functionality as dictionaries, being able to get and set items on self.recipe if you want to save yourself a few keystrokes
+
+> \* With the addition of the MZConverter in version 0.1.6, the ingredient expectations changed slightly. Before, they always came in one of three formats:
+> 1. Savoiardi (name: string), 10.56 (quantity: float), oz (unit: string)
+> 2. Uova (name: string), 3 (quantity: int), n/a (unit: string)
+> 3. Cacao amaro in polvere per la superficie (name: string), to taste (quantity: string), n/a (unit: string)
+> <sub>These recipes have not yet been translate but have had the units already converted, hence their weird combination of Italian and English.</sub>
+> As you can see, the only circumstance for the quantity to be a string is if it was a special word. There are three of them witnessed so far: q.b., q.s., and 'a piacere' (all roughly meaning and translated to 'to taste'). And if n/a came up, it was always the unit.
+> With the addition of the MZConverter, the ingredients, in addition to how they're displayed above, can also be of the format:
+> 1. Zucchero a velo (name: string), n/a (quantity: string), to taste (unit: string)
+> Here, the quantity has become n/a and the unit was q.b. - This is because of a kink in which the MZConverter is made. It could easily be corrected; however, the architecture would need to be changed, and I personally like the flexibility that has been granted. But, for anyone using the API, either keep in mind that the MZConverter is unique, or that 'to taste' and 'n/a' can show up in both units and quantities.
 
 ### The converter class has five class methods:
     write_soup_to(path: string): void
@@ -143,6 +153,11 @@ The method to call:
 
 0.1.6b:
 1. I made ONE error, calling _get_ingredient_final instead of self._get_ingredient_final in the MZConverter inside of abovementioned nested list comprehensions. This is why I need tests! Gee willickers! They're coming when I have the time.
+
+0.1.7:
+1. I wanted to just write a test suite for the MZConverter. Guess what? convert_units_prep was not passing its tests. After way too much work on regular expressions, I managed to fix it by simplifying it further to one regular expression (there were four in 0.1.5)
+2. Speaking of which, I added new tests to all classes to make sure they can parse a few recipes from the correct websites without errors. It uses the requests package, so an internet connection is required for the tests to run. This is to make sure I don't push any code that spontaneously combusts (hopefully).
+3. And yes, I did make a test suite for the MZConverter.
 
 ## Why?
 I made this originally as several modules I would find useful for myself because I am often translating Italian recipes into English and changing the metric quantities in the recipe into imperial units. I saw it as an opportunity to release my first Python package. I tried to document and comment my code as best possible, but this is among my first projects that I have made completely on my own from the ground up. Please contact me or make a pull request on Github if there is a problem.

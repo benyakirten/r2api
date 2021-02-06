@@ -1,10 +1,7 @@
-import sys
-import os
+import sys, os, unittest
+import r2api.utilities.unit_conversion as uc
 
 sys.path.append(os.path.abspath('../r2api'))
-
-import r2api.utilities.unit_conversion as uc
-import unittest
 
 class KnownValues(unittest.TestCase):
     known_values_ing = (
@@ -17,7 +14,8 @@ class KnownValues(unittest.TestCase):
         ('Farina 00 oppure 500 gr di farina senza glutine per dolci', 'Farina 00 oppure 1.1 lb di farina senza glutine per dolci'),
     )
     known_values_prep = (
-        ('190°-200° C ', '374°-392° F '),
+        ('190°-200° C ', '374-392° F '),
+        ('190-200° C ', '374-392° F '),
         ('300g', f"{round(300 * .00220462, 2)*16}oz"),
         ('1,5 litri', f"{round(round(1.5 * 33.814, 2) / 32, 2)} quart"),
         ('15,5-20,2 cm', f"{round(.3937 * 15.5, 2)}-{round(.3937 * 20.2, 2)} inches"),
@@ -45,6 +43,7 @@ class KnownValues(unittest.TestCase):
             self.assertEqual(known_result, result, error_msg)
     
     def test_convert_name_known_values(self):
+        """convert_units_name should give known results for known values"""
         for known_value, known_result in self.known_values_name:
             result = uc.convert_units_name(known_value)
             error_msg = f"{result[0]} not converted correctly to {known_value[1]}"
