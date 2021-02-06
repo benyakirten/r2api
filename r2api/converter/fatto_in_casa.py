@@ -57,7 +57,7 @@ class FCConverter(BaseConverter):
             # A note or a quantity (5 o 6) 
             # The note will be handled later.
             # The quantity will have a digit in it, hence the RegEx
-            if len(children) > 0 and re.search('\d+', children[0].text):
+            if len(children) > 0 and re.search(r'\d+', children[0].text):
                 # The first child's text will be the quantity
                 # i.e. (5 o 6) in this particular case
                 try:

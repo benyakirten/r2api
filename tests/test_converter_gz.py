@@ -1,13 +1,8 @@
-import sys
-import os
-import json
-import unittest
-import bs4
+import sys, os, json, unittest, bs4
 
 sys.path.append(os.path.abspath('../r2api'))
 
 import r2api.converter.giallo_zafferano as gz
-from r2api.utilities.errors import ParsingError
 
 file_path = os.path.abspath(os.path.dirname(__file__))
 path_to_soup = os.path.join(file_path, "soups/GZSoup.html")
@@ -68,6 +63,31 @@ class IncorrectInput(unittest.TestCase):
     def test_bad_type_prep(self):
         """The converter class method get_preparation should raise a TypeError if not passed an object of type bs4.BeautifulSoup as its first argument"""
         self.assertRaises(TypeError, gzc.get_preparation, [])
+
+class SimpleInstantiation(unittest.TestCase):
+    sample_good_recipes = [
+        "https://ricette.giallozafferano.it/Strozzapreti-ai-frutti-di-mare.html",
+        "https://ricette.giallozafferano.it/Bomboloni-al-forno.html",
+        "https://ricette.giallozafferano.it/Polenta-concia.html"
+    ]
+
+    sample_bad_recipes = [
+        "https://www.fattoincasadabenedetta.it/ricetta/polentone-veloce/",
+        "https://www.fattoincasadabenedetta.it/ricetta/riso-al-latte-al-forno/",
+        "https://www.fattoincasadabenedetta.it/ricetta/penne-arrabbiate-al-forno/"
+    ]
+
+
+    def test_requests_instantiation_good(self):
+        """For recipes on the Fatto In Casa site, the converter successfully instantiates"""
+        for recipe in self.sample_good_recipes:
+            converter = gz.GZConverter(recipe)
+            self.assertIsInstance(converter, gz.GZConverter)
+
+    def test_instantiation_bad(self):
+        """For recipes not on the Fatto In Casa site, the converter will throw in error"""
+        for recipe in self.sample_bad_recipes:
+            self.assertRaises(Exception, gz.GZConverter, recipe)
         
 
 if __name__ == '__main__':

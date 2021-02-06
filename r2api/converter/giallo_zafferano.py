@@ -28,7 +28,7 @@ class GZConverter(BaseConverter):
         except:
             # It seems that the method of finding the image has changed
             for link in soup.find_all('link', {"as": "image"}):
-                if link['href'] and re.search('\.(jpg|jpeg|png|bmp)$', link['href']):
+                if link['href'] and re.search(r'\.(jpg|jpeg|png|bmp)$', link['href']):
                     return link['href']
             # Backup
             return "IMAGE_NOT_FOUND"
@@ -55,6 +55,7 @@ class GZConverter(BaseConverter):
         # Others are sure to exist, but must be added as they come up
         special_words = {
             'q.b.': 'to taste',
+            'q.s.': 'to taste',
             'a piacere': 'to taste'
         }
 
@@ -93,7 +94,7 @@ class GZConverter(BaseConverter):
         #     If the special word exists, group(2) will be None
         # 3. group(3) will be the unit or the special word
         #     group(3) should never be none--it would mean the ingredient doesn't have any words
-        q_u_regex = re.search('(\(.*\)|\D*)?(\d*[,\./]?[\d]*)[\s]*(\D*)(\d+)?[\s]*(\D+)?', quantity_unit)
+        q_u_regex = re.search(r'(\(.*\)|\D*)?(\d*[,\./]?[\d]*)[\s]*(\D*)(\d+)?[\s]*(\D+)?', quantity_unit)
 
         # Again, we check if it worked; an blank regex makes the ingredient get appended as []
         if q_u_regex:
@@ -122,7 +123,13 @@ class GZConverter(BaseConverter):
                         temp = q_u_regex.group(1).split(special_word)
                         name += f" {temp[0]}"
                         note_added = True
-                        quantity = special_words[special_word]
+                        if convert_units:
+                            # Note: the only countries that uses imperial units
+                            # Both speak English - for the case of an English person
+                            # wanting q.b. translated but units not to be converted
+                            # Well, I don't have a solution - but they can probably
+                            # Figure out what Q.B. and Q.S. means online
+                            quantity = special_words[special_word]
                         if len(temp) > 1:
                             unit = temp[1]
                         else:
@@ -214,7 +221,7 @@ class GZConverter(BaseConverter):
                     note += f" {q_u_regex.group(3)} "
                 note = note.replace("  ", " ")
                 # This is to find the unit measurement inside of the note
-                secondary_u_q = re.search('(\d+)(\s)([gl])', note)
+                secondary_u_q = re.search(r'(\d+)(\s)([gl])', note)
                 if secondary_u_q:
                     sec_qt = secondary_u_q.group(1)
                     sec_unit = secondary_u_q.group(3)
