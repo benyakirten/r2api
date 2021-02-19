@@ -1,7 +1,8 @@
 import sys, os, unittest
-import r2api.utilities.unit_conversion as uc
 
 sys.path.append(os.path.abspath('../r2api'))
+
+import r2api.utilities.unit_conversion as uc
 
 class KnownValues(unittest.TestCase):
     known_values_ing = (

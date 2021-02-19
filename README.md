@@ -159,5 +159,9 @@ The method to call:
 2. Speaking of which, I added new tests to all classes to make sure they can parse a few recipes from the correct websites without errors. It uses the requests package, so an internet connection is required for the tests to run. This is to make sure I don't push any code that spontaneously combusts (hopefully).
 3. And yes, I did make a test suite for the MZConverter.
 
+0.1.8:
+1. Added a new converter: for the Allacciate il Grembiule blog on the Giallo Zafferano site along with a test suite.
+2. Added a small alternate case for the convert_units_prep function in the unit_conversion util that checks for odd cases with degrees not being caught correctly because of the jankiness of getting other strangeness to fit.
+
 ## Why?
 I made this originally as several modules I would find useful for myself because I am often translating Italian recipes into English and changing the metric quantities in the recipe into imperial units. I saw it as an opportunity to release my first Python package. I tried to document and comment my code as best possible, but this is among my first projects that I have made completely on my own from the ground up. Please contact me or make a pull request on Github if there is a problem.
