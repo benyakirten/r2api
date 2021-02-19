@@ -115,9 +115,7 @@ class MZConverter(BaseConverter):
 
         # Note: Other converters identified and converted name, ingredient and quantity
         # through the same iteration loop. This converter doesn't do the same
-        # And so it cannot put the unit at n/a and the quantity at q.b.
-        # Therefore, instead of changing this identification function (which I'm quite happy with)
-        # I decided to make the website more flexible - and identify the issue
+        # And so it cannot put the unit at n/a and the quantity at q.b here.
         ing_text = item.find(
             'span', {'class': f'recipe-ingredient-{ing_part}'})
         if ing_text:
@@ -147,6 +145,6 @@ class MZConverter(BaseConverter):
                              for i in instructions_divs]
         instructions_text = instructions_text[:-1]
         if convert_units:
-            instructions_text = [convert_units_prep(
-                instruction) for instruction in instructions_text]
+            instructions_text = [convert_units_prep(instruction)
+                for instruction in instructions_text]
         return instructions_text

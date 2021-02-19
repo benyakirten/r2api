@@ -174,16 +174,16 @@ def convert_units_prep(prep):
                         digits[0]) * unit_conversions[unit_lower][0]) + unit_conversions[unit_lower][1], 2)
                     second_digit = round((float(
                         digits[2]) * unit_conversions[unit_lower][0]) + unit_conversions[unit_lower][1], 2)
-                    temp_first_digit, first_conv_unit = simplify_units(
+                    _first_digit, first_conv_unit = simplify_units(
                         first_digit, conv_unit)
-                    temp_second_digit, second_conv_unit = simplify_units(
+                    _second_digit, second_conv_unit = simplify_units(
                         second_digit, conv_unit)
                     # In the rare circumstance that simplify_units will give different units
                     # for a range, we ignore the converison but must dot zero it manually
                     # because simplify_units does it usually
                     if first_conv_unit == second_conv_unit:
-                        first_digit = temp_first_digit
-                        second_digit = temp_second_digit
+                        first_digit = _first_digit
+                        second_digit = _second_digit
                         conv_unit = first_conv_unit  # Whichever of the two
                     else:
                         if float_dot_zero(first_digit):
@@ -209,6 +209,17 @@ def convert_units_prep(prep):
                 # a unit marking. Hence the need for this line
                 if return_string.find("° C "):
                     return_string = return_string.replace("° C ", "° F ")
+            else:
+                # There is ONE circumstance where the regex makes an error
+                # If there is something like "180° per", where 180° gets caught up
+                # as group[0], where an easier solution is to recurse and see if
+                # the recursion produced a different route
+                # I would be more cautious about this except this method isn't too costly
+                _prep = convert_units_prep(group[0])
+                # This line is somewhat superfluous -- any change will trigger it, even if it
+                # isn't correct -- but I think it elucidates the logic
+                if prep != prep.replace(group[0], _prep):
+                    return_string = return_string.replace(group[0], _prep)
     return return_string
 
 
