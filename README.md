@@ -1,5 +1,5 @@
 # What is r2api?
-r<sub>ecipe</sub>2api is a Python package aimed at converting recipes on blogs without an external API into a Python dictionary/JSON object. As of now, it only converts recipes from the websites giallozafferano.it and fattoincasadabenedetta.it.
+r<sub>ecipe</sub>2api is a Python package aimed at converting recipes on blogs without an external API into a Python dictionary/JSON object. As of now, it can only parse websites (reliably) for which there are converters.
 
 ## What does r2api do?
 Feed a URL (depending on which are available; each one has to be manually coded) into one of the Converters. By default (but not obligatorily), units are changed from metric to imperial. An optional module will translate it into English using Google Cloud Translate. Read the details below.
@@ -125,6 +125,7 @@ The method to call:
 3. Add functionality for other translators besides Google Cloud
 4. Refactoring the existing converters into smaller functions
 5. Add more Converters
+6. Expect most of these to be addressed in the following three or so weeks.
 
 ### Version list
 0.1.0: First release
@@ -162,6 +163,10 @@ The method to call:
 0.1.8:
 1. Added a new converter: for the Allacciate il Grembiule blog on the Giallo Zafferano site along with a test suite.
 2. Added a small alternate case for the convert_units_prep function in the unit_conversion util that checks for odd cases with degrees not being caught correctly because of the jankiness of getting other strangeness to fit.
+
+0.1.9:
+1. Added a new converter: for Le Ricette di Max blog on the Giallo Zafferano site (tests forthcoming). It was by far the most challenging and frustrating I've done so far because it didn't have almost any of the conventions of modern websites.
+2. Added a new unit for conversion: decileters.
 
 ## Why?
 I made this originally as several modules I would find useful for myself because I am often translating Italian recipes into English and changing the metric quantities in the recipe into imperial units. I saw it as an opportunity to release my first Python package. I tried to document and comment my code as best possible, but this is among my first projects that I have made completely on my own from the ground up. Please contact me or make a pull request on Github if there is a problem.
