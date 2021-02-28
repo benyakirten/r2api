@@ -9,7 +9,7 @@ def translate_data(data, *, source_language = "it", target_language = "en", clie
         [string, float, string]
     recipe['preparation']: list of strings
 
-    And return a dictionary of the same format that has been translated by google translate
+    And return a dictionary of the same format that has been translated by google translate.
 
     If the client is set to true, then it is assumed that you have a service account and the GOOGLE_APPLICATION_CREDENTIALS environment variable if run offline.
     If run on a google-hosted server, this is handled by default.

@@ -1,4 +1,8 @@
-import sys, os, json, unittest, bs4
+import sys
+import os
+import json
+import unittest
+import bs4
 
 sys.path.append(os.path.abspath('../r2api'))
 

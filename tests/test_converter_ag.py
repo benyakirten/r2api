@@ -1,4 +1,9 @@
-import sys, os, json, unittest, bs4, re
+import sys
+import os
+import json
+import unittest
+import bs4
+import re
 
 sys.path.append(os.path.abspath('../r2api'))
 
@@ -48,9 +53,6 @@ class KnownValues(unittest.TestCase):
         """get_ingredients should give known results for known values of style 2"""
         parsed_ing = ag1.get_ingredients(soup2)
         for idx in range(len(parsed_ing)):
-            # This is a rather hack-y solution
-            # But I can't figure out what's the problem
-            # With the recipe - and, no, .strip() doesn't work for some reason
             if '\n' in parsed_ing[idx][0]:
                 find_extra_chars = re.findall("\n\s*", parsed_ing[idx][0])
                 for find in find_extra_chars:

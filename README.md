@@ -117,17 +117,16 @@ The method to call:
 
 ### Known issues
 1. Occasionally words will not be translated correctly.
-2. If reading from a file, FCConverter will not parse the recipe correctly sometimes.
+2. Converters can sometimes insert extra spaces and tabs if reading from files
 
 ### Ideas for improvement
 1. Rounding to sensible quantities, i.e. 1.5 lbs instead of 1.34 lbs
 2. Break apply_translation up into smaller functions (would also allow for better testing)
-3. Add functionality for other translators besides Google Cloud
+3. Add functionality for other translators besides Google Cloud or write my own NLP model
 4. Refactoring the existing converters into smaller functions
 5. Add more Converters
-6. Expect most of these to be addressed in the following three or so weeks.
 
-### Version list
+### Changelog
 0.1.0: First release
 
 0.1.3:
@@ -165,8 +164,12 @@ The method to call:
 2. Added a small alternate case for the convert_units_prep function in the unit_conversion util that checks for odd cases with degrees not being caught correctly because of the jankiness of getting other strangeness to fit.
 
 0.1.9:
-1. Added a new converter: for Le Ricette di Max blog on the Giallo Zafferano site (tests forthcoming). It was by far the most challenging and frustrating I've done so far because it didn't have almost any of the conventions of modern websites.
+1. Added a new converter (RMConverter): for Le Ricette di Max blog on the Giallo Zafferano site (tests forthcoming). It was by far the most challenging and frustrating I've done so far because it didn't have almost any of the conventions of modern websites.
 2. Added a new unit for conversion: decileters.
 
+0.1.10:
+1. Added unit tests for the RMConverter
+2. Fixed a few typos and copy/pasted things
+
 ## Why?
-I made this originally as several modules I would find useful for myself because I am often translating Italian recipes into English and changing the metric quantities in the recipe into imperial units. I saw it as an opportunity to release my first Python package. I tried to document and comment my code as best possible, but this is among my first projects that I have made completely on my own from the ground up. Please contact me or make a pull request on Github if there is a problem.
+I made this originally as several modules I would find useful for myself because I am often translating Italian recipes into English and changing the metric quantities in the recipe into imperial units. I saw it as an opportunity to release my first Python package. I tried to document and comment my code as best possible, but this is among my first projects that I have made completely on my own from the ground up. Feel free to contact me for any reason or put the issue on github/pull request/etc.

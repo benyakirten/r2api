@@ -1,7 +1,7 @@
 import setuptools
 
 requirements = []
-with open('requirements.txt', 'r') as fh:
+with open("requirements.txt", "r") as fh:
     for line in fh:
         requirements.append(line.strip())
 
@@ -10,7 +10,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="r2api",
-    version="0.1.9",
+    version="0.1.10",
     author="Benyakir Horowitz",
     author_email="benyakir.horowitz@gmail.com",
     description="A small package to translate an Italian recipe and its units into English and imperial units using Google Translate",
@@ -22,7 +22,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
-        "Development Status :: 2 - Pre-Alpha"
+        "Development Status :: 3 - Alpha"
     ],
     python_requires='>=3.6',
     install_requires = requirements

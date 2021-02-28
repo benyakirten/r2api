@@ -1,4 +1,9 @@
-import sys, os, json, unittest, bs4, re
+import sys
+import os
+import json
+import unittest
+import bs4
+import re
 
 sys.path.append(os.path.abspath('../r2api'))
 
@@ -70,13 +75,13 @@ class SimpleInstantiation(unittest.TestCase):
 
 
     def test_requests_instantiation_good(self):
-        """For recipes on the Fatto In Casa site, the converter successfully instantiates"""
+        """For recipes on the Molliche di Zucchero site, the converter successfully instantiates"""
         for recipe in self.sample_good_recipes:
             converter = mz.MZConverter(recipe)
             self.assertIsInstance(converter, mz.MZConverter)
 
     def test_instantiation_bad(self):
-        """For recipes not on the Fatto In Casa site, the converter will throw in error"""
+        """For recipes not on the Molliche di Zucchero site, the converter will throw in error"""
         for recipe in self.sample_bad_recipes:
             self.assertRaises(Exception, mz.MZConverter, recipe)
 
