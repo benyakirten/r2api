@@ -21,7 +21,7 @@ gzc = gz.GZConverter(path_to_soup, read_from_file = True)
 with open(path_to_soup, 'r') as f:
     # Using a with/as statement will produce an inconsistent comprehension
     # of the soup if the html.parser is used
-    soup = bs4.BeautifulSoup(f, 'lxml')
+    soup = bs4.BeautifulSoup(f, 'html.parser')
 
 with open(path_to_json, 'r') as f:
     gz_json = json.load(f)
