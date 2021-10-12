@@ -5,7 +5,7 @@ import unittest
 import bs4
 import re
 
-sys.path.append(os.path.abspath('../r2api'))
+sys.path.append(os.path.abspath('../'))
 
 import r2api.converter.allacciate_il_grembiule as ag
 
@@ -36,6 +36,14 @@ with open(path_to_json2, 'r') as f:
     ag_json2 = json.load(f)
 
 class KnownValues(unittest.TestCase):
+    def test_image_identification(self):
+        """get_image should give known results for known values"""
+        parsed_image_1 = ag1.get_image(soup1)
+        self.assertEqual(ag_json1['image'], parsed_image_1)
+
+        parsed_image_2 = ag2.get_image(soup2)
+        self.assertEqual(ag_json2['image'], parsed_image_2)
+
     def test_ingredients_identification1(self):
         """get_ingredients should give known results for known values of style 1"""
         parsed_ing = ag1.get_ingredients(soup1)

@@ -32,6 +32,7 @@ class MZConverter(BaseConverter):
                     return img['src']
             except:
                 pass
+        return 'IMAGE_NOT_FOUND'
 
     def get_ingredients(self, soup, convert_units=True):
         """

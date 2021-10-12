@@ -23,15 +23,20 @@ class GZConverter(BaseConverter):
         return soup.find('title').text.strip().replace("\n", "")
 
     def get_image(self, soup):
-        try:
-            image = soup.find('source').attrs['data-srcset']
-        except:
-            # It seems that the method of finding the image has changed
-            for link in soup.find_all('link', {"as": "image"}):
-                if link['href'] and re.search(r'\.(jpg|jpeg|png|bmp)$', link['href']):
-                    return link['href']
-            # Backup
-            return "IMAGE_NOT_FOUND"
+        default_path = soup.find("picture", {"class":"gz-featured-image"})
+        if default_path:
+            try:
+                return default_path.find("img").attrs['data-src']
+            except:
+                try:
+                    return soup.find('source').attrs['data-srcset']
+                except:
+                    # It seems that the method of finding the image has changed
+                    for link in soup.find_all('link', {"as": "image"}):
+                        if link['href'] and re.search(r'\.(jpg|jpeg|png|bmp)$', link['href']):
+                            return link['href']
+                    # Backup
+                    return "IMAGE_NOT_FOUND"
 
     def get_ingredients(self, soup, convert_units = True):
         """
@@ -98,7 +103,7 @@ class GZConverter(BaseConverter):
 
         # Again, we check if it worked; an blank regex makes the ingredient get appended as []
         if q_u_regex:
-            # Special Handling: there is a note
+            # First situation we check for: there is a note
 
             # An explanation of the case's complexity:
             # group(1) means we suspect there is a note;
@@ -265,9 +270,9 @@ class GZConverter(BaseConverter):
         if not isinstance(soup, BeautifulSoup):
             raise TypeError("expected argument soup to be of type bs4.BeautifulSoup")
 
-        temp_steps = soup.find_all("div", {"class": "gz-content-recipe gz-mBottom4x"})
-        # Note: temp_steps[0] will be a bunch of CSS without much content
-        p = temp_steps[1].find_all('p')
+        _steps = soup.find_all("div", {"class": "gz-content-recipe gz-mBottom4x"})
+        # Note: _steps[0] will be a bunch of CSS without much content
+        p = _steps[1].find_all('p')
         prep = []
 
         for i in p:
@@ -277,10 +282,10 @@ class GZConverter(BaseConverter):
                 if not j.name:
                     # There will be lots of blank spaces and line breaks in the element
                     # idem for the other case
-                    temp = j.strip().replace('\n','')
+                    _step = j.strip().replace('\n','')
                     if convert_units:
-                        temp = convert_units_prep(temp)
-                    prep.append(temp)
+                        _step = convert_units_prep(_step)
+                    prep.append(_step)
                 # If there is, it's an <a> element that links to the general concept of the item
                 # the reason why I exclude <span> elements is that they are just the number of the steps
                 # this could be refactored to put the photo at each point - which corresponds with the span;

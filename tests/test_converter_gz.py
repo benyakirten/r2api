@@ -3,8 +3,9 @@ import os
 import json
 import unittest
 import bs4
+import re
 
-sys.path.append(os.path.abspath('../r2api'))
+sys.path.append(os.path.abspath('../'))
 
 import r2api.converter.giallo_zafferano as gz
 
@@ -26,14 +27,19 @@ with open(path_to_json, 'r') as f:
     gz_json = json.load(f)
 
 class KnownValues(unittest.TestCase):
+    def test_image_identification(self):
+        """get_image should give a known result for a known recipe"""
+        parsed_image = gzc.get_image(soup)
+        self.assertEqual(gz_json['image'], parsed_image)
+        
     def test_ingredients_identification(self):
-        """get_ingredients should give known results for known values"""
+        """get_ingredients should give a known result for known values"""
         parsed_ing = gzc.get_ingredients(soup)
         for idx in range(len(parsed_ing)):
             self.assertEqual(gz_json['ingredients'][idx], parsed_ing[idx])
 
     def test_preparation_identification(self):
-        """get_preparation should give known results for known values"""
+        """get_preparation should give a known result for known values"""
         parsed_prep = gzc.get_preparation(soup)
         for idx in range(len(parsed_prep)):
             self.assertEqual(gz_json['preparation'][idx], parsed_prep[idx])

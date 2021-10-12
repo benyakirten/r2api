@@ -27,13 +27,12 @@ class AGConverter(BaseConverter):
         imgs = soup.find_all("img")
         title = soup.find("title").text.lower()
         # We'll have a fallback so the converter doesn't crash
-        final_image = ""
         # One of the images will have the following classes,
         # and we want that one's src attribute
         for img in imgs:
             if 'alt' in img.attrs and img.attrs['alt'].lower() in title and img.attrs['alt'] != "":
-                final_image = img.attrs['src']
-        return final_image
+                return img.attrs['src']
+        return 'IMAGE_NOT_FOUND'
 
     def get_ingredients(self, soup, convert_units = True):
         """

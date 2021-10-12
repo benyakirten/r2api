@@ -5,7 +5,7 @@ import unittest
 import bs4
 import re
 
-sys.path.append(os.path.abspath('../r2api'))
+sys.path.append(os.path.abspath('../'))
 
 import r2api.converter.molliche_di_zucchero as mz
 
@@ -27,6 +27,11 @@ with open(path_to_json, 'r') as f:
     mz_json = json.load(f)
 
 class KnownValues(unittest.TestCase):
+    def test_image_identification(self):
+        """get_image should give a known result for a known recipe"""
+        parsed_image = mz_converter.get_image(soup)
+        self.assertEqual(mz_json['image'], parsed_image)
+
     def test_ingredients_identification(self):
         """get_ingredients should give known results for known values"""
         parsed_ing = mz_converter.get_ingredients(soup)
@@ -37,7 +42,9 @@ class KnownValues(unittest.TestCase):
         """get_preparation should give known results for known values"""
         parsed_prep = mz_converter.get_preparation(soup)
         for idx in range(len(parsed_prep)):
-            self.assertEqual(mz_json['preparation'][idx], parsed_prep[idx])
+            _prep = parsed_prep[idx].strip().replace('\n', '')
+            _prep = re.sub(r'\s+', ' ', _prep)
+            self.assertEqual(mz_json['preparation'][idx], _prep)
 
 class KnownQualities(unittest.TestCase):
     def test_recipe_qualities(self):

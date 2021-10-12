@@ -25,19 +25,14 @@ class RMConverter(BaseConverter):
 
     def get_image(self, soup):
         imgs = soup.find_all('img')
-        final_image = ''
+        title = soup.find('title').text
         for img in imgs:
             title_in_src = re.search(r'\/([\w-]+)\.\w+$', img['src'])
             if title_in_src:
                 potential_match = title_in_src.groups()[0].replace('-', ' ')
                 if potential_match.lower() in soup.find('title').text.lower():
-                    final_image = img['src']
-        # if not final_image:
-        #     # It seems like the image is always the second in the page
-        #     # So it can be a fallback
-        #     try:
-        #         final_image = imgs[1]['src']
-        return final_image
+                    return img['src']
+        return 'IMAGE_NOT_FOUND'
 
     def get_ingredients(self, soup, convert_units = True):
         """

@@ -5,7 +5,7 @@ import unittest
 import bs4
 import re
 
-sys.path.append(os.path.abspath('../r2api'))
+sys.path.append(os.path.abspath('../'))
 
 import r2api.converter.ricette_di_max as rm
 
@@ -44,6 +44,15 @@ with open(path_to_json3, 'r') as f:
     rm_json3 = json.load(f)
 
 class KnownValues(unittest.TestCase):
+    def test_image_identification(self):
+        """get_image should give known results for known recipes"""
+        parsed_image_1 = rm1.get_image(soup1)
+        self.assertEqual(rm_json1['image'], parsed_image_1)
+        parsed_image_2 = rm2.get_image(soup2)
+        self.assertEqual(rm_json2['image'], parsed_image_2)
+        parsed_image_3 = rm3.get_image(soup3)
+        self.assertEqual(rm_json3['image'], parsed_image_3)
+
     def test_ingredients_identification1(self):
         """get_ingredients should give known results for known values of style 1"""
         parsed_ing = rm1.get_ingredients(soup1)
@@ -81,43 +90,26 @@ class KnownValues(unittest.TestCase):
         """get_preparation should give known results for known values"""
         parsed_prep = rm1.get_preparation(soup1)
         for idx in range(len(parsed_prep)):
-            _parsed_prep = parsed_prep[idx]
-            while '\n             ' in _parsed_prep:
-                _parsed_prep = _parsed_prep.replace('\n             ', ' ')
-            while '   ' in _parsed_prep:
-                _parsed_prep = _parsed_prep.replace('   ', ' ')
-            while '  ' in _parsed_prep:
-                _parsed_prep = _parsed_prep.replace('  ', ' ')
-            _parsed_prep = _parsed_prep[1:]
-            self.assertNotEqual(rm_json1['preparation'][idx], _parsed_prep)
+            _parsed_prep = parsed_prep[idx].strip().replace('\n', '')
+            _parsed_prep = re.sub(r'\s+', ' ', _parsed_prep)
+            _json_prep = rm_json1['preparation'][idx].replace('\xa0', ' ')
+            self.assertEqual(_json_prep, _parsed_prep)
 
     def test_preparation_identification2(self):
         """get_preparation should give known results for known values"""
-        parsed_prep = rm1.get_preparation(soup2)
+        parsed_prep = rm2.get_preparation(soup2)
         for idx in range(len(parsed_prep)):
-            _parsed_prep = parsed_prep[idx]
-            while '\n             ' in _parsed_prep:
-                _parsed_prep = _parsed_prep.replace('\n             ', ' ')
-            while '   ' in _parsed_prep:
-                _parsed_prep = _parsed_prep.replace('   ', ' ')
-            while '  ' in _parsed_prep:
-                _parsed_prep = _parsed_prep.replace('  ', ' ')
-            _parsed_prep = _parsed_prep[1:]
-            self.assertNotEqual(rm_json2['preparation'][idx], _parsed_prep)
+            _parsed_prep = parsed_prep[idx].strip().replace('\n', '')
+            _parsed_prep = re.sub(r'\s+', ' ', _parsed_prep)
+            self.assertEqual(rm_json2['preparation'][idx], _parsed_prep)
     
     def test_preparation_identification3(self):
         """get_preparation should give known results for known values"""
-        parsed_prep = rm1.get_preparation(soup3)
+        parsed_prep = rm3.get_preparation(soup3)
         for idx in range(len(parsed_prep)):
-            _parsed_prep = parsed_prep[idx]
-            while '\n             ' in _parsed_prep:
-                _parsed_prep = _parsed_prep.replace('\n             ', ' ')
-            while '   ' in _parsed_prep:
-                _parsed_prep = _parsed_prep.replace('   ', ' ')
-            while '  ' in _parsed_prep:
-                _parsed_prep = _parsed_prep.replace('  ', ' ')
-            _parsed_prep = _parsed_prep[1:]
-            self.assertNotEqual(rm_json3['preparation'][idx], _parsed_prep)
+            _parsed_prep = parsed_prep[idx].strip().replace('\n', '')
+            _parsed_prep = re.sub(r'\s+', ' ', _parsed_prep)
+            self.assertEqual(rm_json3['preparation'][idx], _parsed_prep)
 
 class KnownQualities(unittest.TestCase):
     def test_recipe_qualities(self):

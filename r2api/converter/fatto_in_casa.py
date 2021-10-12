@@ -27,7 +27,10 @@ class FCConverter(BaseConverter):
         return soup.find('title').text.strip().replace("\n", "")
 
     def get_image(self, soup):
-        return soup.find('img', {'id': 'top-img'}).attrs['src']
+        try:
+            return soup.find('img', {'id': 'top-img'}).attrs['src']
+        except:
+            return 'IMAGE_NOT_FOUND'
 
     def get_ingredients(self, soup, convert_units = True):
         """
@@ -44,6 +47,9 @@ class FCConverter(BaseConverter):
         
         # This will identify the LIs, each of which contains the quantity, unit and name of the ingredient
         ing_elements = soup.find_all('li', {'class': 'wpurp-recipe-ingredient'})
+        if len(ing_elements) == 0:
+            raise Exception("Unable to find ingredients for recipe")
+
         ingredients = []
         for element in ing_elements:
             quantity = element.find('span', {'class': 'wpurp-recipe-ingredient-quantity'}).text
@@ -119,6 +125,10 @@ class FCConverter(BaseConverter):
             raise TypeError("expected argument soup to be of type bs4.BeautifulSoup")
 
         elements = soup.find_all("li", {"class": "wpurp-recipe-instruction"})
+
+        if len(elements) == 0:
+            raise Exception("Unable to find preparation steps for recipe")
+
         prep = []
         for step in elements:
             temp = step.text.strip().replace("\n", " ")

@@ -7,7 +7,11 @@ Feed a URL (depending on which are available; each one has to be manually coded)
 ## How do I install it?
     pip install r2api
 
-### Other dependencies
+## How do I run tests?
+Navigate to the r2api folder
+    python -m unittest tests/test_converter_ag
+
+## Other dependencies
 This package needs several packages. bs4, Beautiful Soup and Requests are included in requirements.txt. Because google-cloud-translate is much larger (and is only used for one part of the functionality that requires a separate API key), it isn't included. But it can be installed with the following command:
     pip install google-cloud-translate
 
@@ -46,7 +50,7 @@ Converters have two optional parameters other than the URL, both keyword-only ar
 2. read_from_file: a boolean set to False by default. If set to True, the path is assumed to be a relative path to a file containing the appropriate bs4 soup (of the same style as created when the write_soup_to method is invoked)
 3. Note also that the Converter class has limited functionality as dictionaries, being able to get and set items on self.recipe if you want to save yourself a few keystrokes
 
-> \* With the addition of the MZConverter in version 0.1.6, the ingredient expectations changed slightly. Before, they always came in one of three formats:
+* With the addition of the MZConverter in version 0.1.6, the ingredient expectations changed slightly. Before, they always came in one of three formats:
 > 1. Savoiardi (name: string), 10.56 (quantity: float), oz (unit: string)
 > 2. Uova (name: string), 3 (quantity: int), n/a (unit: string)
 > 3. Cacao amaro in polvere per la superficie (name: string), to taste (quantity: string), n/a (unit: string)
@@ -170,6 +174,12 @@ The method to call:
 0.1.10:
 1. Added unit tests for the RMConverter
 2. Fixed a few typos and copy/pasted things
+
+0.2.0:
+1. Set up travis for ci/cd
+2. Fixed tests up a bit, such as adding tests for image identification to all converters. Also the Ricette di Max tests were hilariously set to just give the wrong output so the tests would pass. I think I'd become really frustrated when I was writing the tests. I managed to fix them up really easily by just using some regex.
+3. Dramatically reduced the size of the HTML files for the tests. Almost all of the tests were 100kb+ of bloatware. One was more than 600kb! Who needs that much for ONE RECIPE on their blog? I was worried about the approximately 200kb for my whole blog. Also I added tests for iamge identification for all the converters.
+4. Attached a third condition for GZConverter to look for the recipe image.
 
 ## Why?
 I made this originally as several modules I would find useful for myself because I am often translating Italian recipes into English and changing the metric quantities in the recipe into imperial units. I saw it as an opportunity to release my first Python package. I tried to document and comment my code as best possible, but this is among my first projects that I have made completely on my own from the ground up. Feel free to contact me for any reason or put the issue on github/pull request/etc.

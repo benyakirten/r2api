@@ -2,7 +2,7 @@ import sys
 import os
 import unittest
 
-sys.path.append(os.path.abspath('../r2api'))
+sys.path.append(os.path.abspath('../'))
 
 import r2api.utilities.unit_conversion as uc
 

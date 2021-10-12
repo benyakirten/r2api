@@ -5,7 +5,7 @@ import unittest
 import bs4
 import re
 
-sys.path.append(os.path.abspath('../r2api'))
+sys.path.append(os.path.abspath('../'))
 
 import r2api.converter.fatto_in_casa as fic
 
@@ -27,6 +27,11 @@ with open(path_to_json, 'r') as f:
     fic_json = json.load(f)
 
 class KnownValues(unittest.TestCase):
+    def test_image_identification(self):
+        """get_image should give a known result for a known value"""
+        parsed_image = fcc.get_image(soup)
+        self.assertEqual(fic_json['image'], parsed_image)
+
     def test_ingredients_identification(self):
         """get_ingredients should give known results for known values"""
         parsed_ing = fcc.get_ingredients(soup)
@@ -44,7 +49,9 @@ class KnownValues(unittest.TestCase):
         """get_preparation should give known results for known values"""
         parsed_prep = fcc.get_preparation(soup)
         for idx in range(len(parsed_prep)):
-            self.assertEqual(fic_json['preparation'][idx], parsed_prep[idx])
+            _prep = parsed_prep[idx].strip().replace("\n", "")
+            _prep = re.sub(r'\s+', ' ', _prep)
+            self.assertEqual(fic_json['preparation'][idx], _prep)
 
 class KnownQualities(unittest.TestCase):
     def test_recipe_qualities(self):
@@ -56,8 +63,8 @@ class KnownQualities(unittest.TestCase):
 
 class IncorrectInput(unittest.TestCase):
     def test_bad_recipe(self):
-        """The converter class should raise a TypeError if the recipe cannot be parsed"""
-        self.assertRaises(AttributeError, fic.FCConverter, path_to_wrong_soup, read_from_file = True)
+        """The converter class should raise an exception if the recipe cannot be parsed"""
+        self.assertRaises(Exception, fic.FCConverter, path_to_wrong_soup, read_from_file = True)
     
     def test_bad_type_ing(self):
         """The converter class method get_ingredients should raise a TypeError if not passed an object of type bs4.BeautifulSoup as its first argument"""

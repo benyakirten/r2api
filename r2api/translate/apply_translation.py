@@ -44,6 +44,9 @@ def translate_data(data, *, source_language = "it", target_language = "en", clie
         # An API key must be gotten from google
         API_KEY = os.environ.get('API_KEY')
 
+        if not API_KEY:
+            raise KeyError("No API key detected")
+
         # Using an API KEY cannot use the google translate module
         # but must instead make get/post requests to the google API
         # To reduce the amount of requests, only two are made, using string methods

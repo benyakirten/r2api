@@ -20,7 +20,7 @@ class BaseConverter(ABC):
     NOTE: The recipe will not be parsed whatsoever in this base class.
     """
 
-    def __init__(self, url='https://www.google.com/', *, convert_units=True, read_from_file=False):
+    def __init__(self, url, *, convert_units=True, read_from_file=False):
         if read_from_file:
             with open(url, 'r') as f:
                 self.soup = BeautifulSoup(f, 'html.parser')
