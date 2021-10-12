@@ -9,12 +9,8 @@ Feed a URL (depending on which are available; each one has to be manually coded)
 ## How do I install it?
     pip install r2api
 
-## How do I run tests?
-Navigate to the r2api folder
-    python -m unittest tests/test_converter_ag
-
 ## Other dependencies
-This package needs several packages. bs4, Beautiful Soup and Requests are included in requirements.txt. Because google-cloud-translate is much larger (and is only used for one part of the functionality that requires a separate API key), it isn't included. But it can be installed with the following command:
+This package needs several packages. bs4, Beautiful Soup and Requests are included in requirements.txt. Because google-cloud-translate is much larger (and is only used for one part of the functionality that can be replaced via a separate API key), it isn't included. But it and all of the dependencies can be installed with the following command (note: you need gcc to run it properly, which is included with almost all operating systems):
     pip install google-cloud-translate
 
 ## How to use it generally:

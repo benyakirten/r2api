@@ -25,5 +25,5 @@ setuptools.setup(
         "Development Status :: 3 - Alpha"
     ],
     python_requires='>=3.6',
-    install_requires = requirements
+    install_requires=requirements
 )
