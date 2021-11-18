@@ -1,4 +1,10 @@
 import re
+from typing import (
+    List,
+    Union,
+    Tuple
+)
+
 from bs4 import BeautifulSoup
 
 from .base_converter import BaseConverter
@@ -23,16 +29,19 @@ class FCConverter(BaseConverter):
     Optional parameters: convert_units: bool = True
     If True, units and their quantities in both ingredients and preparation will be converted into American imperial units. If False, they will not be converted
     """
-    def get_title(self, soup):
-        return soup.find('title').text.strip().replace("\n", "")
+    def get_title(self, soup: BeautifulSoup) -> str:
+        return soup.find('title') \
+            .text \
+            .strip() \
+            .replace("\n", "")
 
-    def get_image(self, soup):
+    def get_image(self, soup: BeautifulSoup) -> str:
         try:
             return soup.find('img', {'id': 'top-img'}).attrs['src']
         except:
             return 'IMAGE_NOT_FOUND'
 
-    def get_ingredients(self, soup, convert_units = True):
+    def get_ingredients(self, soup: BeautifulSoup, convert_units: bool = True) -> List[Tuple[str, Union[int, float, str], str]]:
         """
         Pass a BeauitfulSoup of a Fatto in Casa recipe and get in return a list of the following format:
         [
@@ -116,7 +125,7 @@ class FCConverter(BaseConverter):
             ingredients.append([name, quantity, unit])
         return ingredients
 
-    def get_preparation(self, soup, convert_units = True):
+    def get_preparation(self, soup: BeautifulSoup, convert_units = True) -> List[str]:
         """
         This function takes a soup of a Fatto in Casa recipe and returns the steps made into a list.
         Ingredients and units are converted from metric to imperial if convert_units is True
@@ -136,7 +145,7 @@ class FCConverter(BaseConverter):
                 # If convert_units is set to False, this is skipped
                 temp = convert_units_prep(temp)
             if len(temp) > 0:
-                # Occasioaly these will be empty and can be safely discarded
+                # Occasionally these will be empty and can be safely discarded
                 prep.append(temp)
         return prep
 

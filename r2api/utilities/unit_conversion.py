@@ -1,11 +1,21 @@
 import copy
 import re
+from typing import Union, List, Tuple
 
-
-def convert_units_ing(quantity, unit):
+def convert_units_ing(quantity: Union[int, float, str], unit: str) -> List[Tuple[Union[int, float, str], str]]:
     """
     Pass in a number and a quantity in metric units
     Returns a number and quantity in (American) imperial units
+
+    Args:
+        quantity Union[int, float, str]: the quantity of an ingredient
+        unit (str): the units to be converted
+
+    Raises:
+        TypeError: If the quantity cannot be cast to string (i.e. is not a int/float/string)
+
+    Returns:
+        List[Tuple[Union[int, float, str], str]]: [description]
     """
     try:
         quantity = str(quantity)
@@ -31,7 +41,7 @@ def convert_units_ing(quantity, unit):
     # key : (ratio, translated_key)
     # Unlike below, constants are not needed
     # because temperatures are not passed in
-    unit_conversion = {
+    unit_conversion: dict[str, Tuple[float, str]] = {
         'g': (0.00220462, 'lb'),
         'gr': (0.00220462, 'lb'),
         'grammi': (0.00220462, 'lb'),
@@ -65,7 +75,20 @@ def convert_units_ing(quantity, unit):
             return (quantity, unit)
 
 
-def convert_units_name(name):
+def convert_units_name(name: str) -> str:
+    """
+    Detects a convertable quantity and unit in a string that has not been parsed as an ingredient
+    and converts it from metric units to imperial (American) units
+
+    Args:
+        name (str): a generic string of text that contains convertable quantity and units
+
+    Raises:
+        TypeError: if name is not a string
+
+    Returns:
+        str: the same string of text but with units and quantities converted
+    """
     if not isinstance(name, str):
         raise TypeError("name of ingredient must be a string")
 
@@ -76,21 +99,30 @@ def convert_units_name(name):
         # This is later used to match the replaced/replacing text strings
         convertable_quantity, convertable_unit = match[0], match[1]
         converted_quantity, converted_unit = convert_units_ing(
-            match[0], match[1])
+            match[0],
+            match[1]
+        )
 
         # If there hasn't been any conversion, there is no need to proceed
         # This is here to double check that we're not needlessly converting units
         if convertable_quantity != converted_quantity and convertable_unit != converted_unit:
             # The replace method requires two strings, however the converted_quantity
             # Has been cast to float for other purposes
-            name = name.replace(convertable_quantity, str(converted_quantity))
-            name = name.replace(convertable_unit, converted_unit)
+            name = name \
+                .replace(convertable_quantity, str(converted_quantity)) \
+                .replace(convertable_unit, converted_unit)
     return name
 
 
-def convert_units_prep(prep):
+def convert_units_prep(prep: str) -> str:
     """
     Takes a string, parses it for metric units and converts both them and the quantities into imperial units and quantities
+
+    Args:
+        prep (str): a generic string with convertable units/quantities within
+
+    Returns:
+        str: the generic string with converted units/quantities
     """
     # We'll make a copy so we don't have any side effects
     # Because we'll be doing some replacing if we have a hit
@@ -99,7 +131,7 @@ def convert_units_prep(prep):
     # this dictionary is of the format:
     # key: (scalar, constant, unit)
     # N.B. Both temperatures and lengths are here
-    unit_conversions = {
+    unit_conversions: dict[str, Tuple[float, str]] = {
         'g': (0.00220462, 0, 'lb'),
         'gr': (0.00220462, 0, 'lb'),
         'grammi': (0.00220462, 0, 'lb'),
@@ -225,9 +257,16 @@ def convert_units_prep(prep):
     return return_string
 
 
-def simplify_units(quantity, unit, change_unit=True):
+def simplify_units(quantity: Union[int, float], unit: str) -> Tuple[Union[int, float], str]:
     """
     Takes a quantity and unit in imperial units and if it is within certain tolerances, changes it to a more convenient quantity
+
+    Args:
+        quantity (Union[int, float]): quantity to be simplified
+        unit (str): units of said quantity to change to simplified amounts
+
+    Returns:
+        Tuple[Union[int, float], str]: simplified quantity and units
     """
     return_quantity = quantity
     return_unit = unit
@@ -260,8 +299,16 @@ def simplify_units(quantity, unit, change_unit=True):
     return return_quantity, return_unit
 
 
-def float_dot_zero(qt):
-    """Returns true if a float ends in .0. All other situations return false"""
+def float_dot_zero(qt: float) -> bool:
+    """
+    Returns true if a float ends in .0 (and so can be converted to an integer without losing data). All other situations return false
+
+    Args:
+        qt (float): the quantity to check
+
+    Returns:
+        bool: if the float ends in .0
+    """
     if isinstance(qt, float):
         return str(qt).endswith('.0')
     else:

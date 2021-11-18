@@ -1,4 +1,10 @@
 import re
+from typing import (
+    List,
+    Union,
+    Tuple
+)
+
 from bs4 import BeautifulSoup
 
 from .base_converter import BaseConverter
@@ -19,10 +25,10 @@ class GZConverter(BaseConverter):
     recipe['preparation']: list of the steps to make the recipe
     """
 
-    def get_title(self, soup):
+    def get_title(self, soup: BeautifulSoup) -> str:
         return soup.find('title').text.strip().replace("\n", "")
 
-    def get_image(self, soup):
+    def get_image(self, soup: BeautifulSoup) -> str:
         default_path = soup.find("picture", {"class":"gz-featured-image"})
         if default_path:
             try:
@@ -38,7 +44,7 @@ class GZConverter(BaseConverter):
                     # Backup
                     return "IMAGE_NOT_FOUND"
 
-    def get_ingredients(self, soup, convert_units = True):
+    def get_ingredients(self, soup: BeautifulSoup, convert_units = True) -> List[Tuple[str, Union[int, float, str], str]]:
         """
         Pass a BeauitfulSoup comprehension of a Giallo Zafferano recipe and get in return a list of the following format:
         [
@@ -54,7 +60,7 @@ class GZConverter(BaseConverter):
         ingredients = soup.find_all("dd", {"class": "gz-ingredient"})
         return [self._parse_ingredients(i, convert_units) for i in ingredients]
 
-    def _parse_ingredients(self, ingredient, convert_units = True):
+    def _parse_ingredients(self, ingredient: str, convert_units: bool = True) -> Tuple[str, Union[int, float, str], str]:
         # Other special words may be added. Note: q.b., though valid in English,
         # is common in Italian but uncommon in English
         # Others are sure to exist, but must be added as they come up
@@ -262,7 +268,7 @@ class GZConverter(BaseConverter):
             final_ingredient = [name, quantity, unit]
         return final_ingredient
 
-    def get_preparation(self, soup, convert_units = True):
+    def get_preparation(self, soup: BeautifulSoup, convert_units: bool = True) -> List[str]:
         """
         This function takes a soup of a G-Z recipe and returns the steps made into a list.
         Ingredients and units are converted from metric to imperial if convert_units is True

@@ -1,6 +1,8 @@
 import json, os, copy, sys
 
-def translate_data(data, *, source_language = "it", target_language = "en", client = False, custom_replace = None):
+from typing import Optional
+
+def translate_data(data: dict, *, source_language: str = "it", target_language: str = "en", client: bool = False, custom_replace: Optional[dict] = None) -> dict:
     """
     This function will take a python dictionary of the following format:
     recipe['name']: string

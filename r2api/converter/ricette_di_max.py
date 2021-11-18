@@ -1,6 +1,12 @@
 import re
 from bs4 import BeautifulSoup
 
+from typing import (
+    List,
+    Union,
+    Tuple
+)
+
 from .base_converter import BaseConverter
 from ..utilities.unit_conversion import (
     convert_units_prep,
@@ -20,10 +26,10 @@ class RMConverter(BaseConverter):
     recipe['preparation']: list of the steps to make the recipe
     """
 
-    def get_title(self, soup):
+    def get_title(self, soup: BeautifulSoup) -> str:
         return soup.find('title').text
 
-    def get_image(self, soup):
+    def get_image(self, soup: BeautifulSoup) -> str:
         imgs = soup.find_all('img')
         title = soup.find('title').text
         for img in imgs:
@@ -34,7 +40,7 @@ class RMConverter(BaseConverter):
                     return img['src']
         return 'IMAGE_NOT_FOUND'
 
-    def get_ingredients(self, soup, convert_units = True):
+    def get_ingredients(self, soup: BeautifulSoup, convert_units = True) -> List[Tuple[str, Union[int, float, str], str]]:
         """
         Pass a BeauitfulSoup comprehension of an appropriate recipe and get in return a list of the following format:
         [
@@ -68,7 +74,7 @@ class RMConverter(BaseConverter):
 
         return ingredients
     
-    def _get_ingredients_style_1(self, ingredients_container):
+    def _get_ingredients_style_1(self, ingredients_container) -> List[Tuple[str, Union[int, float, str], str]]:
         """Parses the ingredients according to the first style of the blog"""
         ingredients_divs = ingredients_container.find_all("div", {"class", "recipe-ingredient-item"})
         ing_unprocessed = []
@@ -105,7 +111,7 @@ class RMConverter(BaseConverter):
             ing_final.append([name, quantity, unit])
         return ing_final
 
-    def _get_ingredients_style_2(self, ingredients_container):
+    def _get_ingredients_style_2(self, ingredients_container) -> List[Tuple[str, Union[int, float, str], str]]:
         """Parses the ingredients according to the second style of the blog"""
         ingredients_li = ingredients_container.find_all("li")
 
@@ -149,7 +155,7 @@ class RMConverter(BaseConverter):
             final_ing.append([name, quantity, unit])
         return final_ing
 
-    def _translate_ingredient(self, name, quantity, unit):
+    def _translate_ingredient(self, name, quantity, unit) -> List[Tuple[str, Union[int, float, str], str]]:
         """
         Converts a name, quantity and unit from metric to imperial units
         """
@@ -166,7 +172,7 @@ class RMConverter(BaseConverter):
             _quantity = int(_quantity)
         return [_name, _quantity, _unit] 
 
-    def get_preparation(self, soup, convert_units=True):
+    def get_preparation(self, soup, convert_units=True) -> List[str]:
         """
         This function takes a soup of an appropriate recipe and returns the steps made into a list.
         Ingredients and units are converted from metric to imperial if convert_units is True

@@ -10,7 +10,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="r2api",
-    version="0.2.0",
+    version="0.2.1",
     author="Benyakir Horowitz",
     author_email="benyakir.horowitz@gmail.com",
     description="A small package to translate an Italian recipe and its units into English and imperial units using Google Translate",

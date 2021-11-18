@@ -1,4 +1,10 @@
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, element
+
+from typing import (
+    List,
+    Union,
+    Tuple
+)
 
 from .base_converter import BaseConverter
 from ..utilities.unit_conversion import (
@@ -19,13 +25,13 @@ class MZConverter(BaseConverter):
     recipe['preparation']: list of the steps to make the recipe
     """
 
-    def get_title(self, soup):
+    def get_title(self, soup: BeautifulSoup) -> str:
         return soup.find('title').text.strip()
 
-    def get_image(self, soup):
+    def get_image(self, soup: BeautifulSoup) -> str:
         return self._find_image(soup.find_all('img'))
 
-    def _find_image(self, imgs):
+    def _find_image(self, imgs: element.ResultSet) -> str:
         for img in imgs:
             try:
                 if 'wp' in img['class'][0]:
@@ -34,7 +40,7 @@ class MZConverter(BaseConverter):
                 pass
         return 'IMAGE_NOT_FOUND'
 
-    def get_ingredients(self, soup, convert_units=True):
+    def get_ingredients(self, soup: BeautifulSoup, convert_units: bool = True) -> List[Tuple[str, Union[int, float, str], str]]:
         """
         Pass a BeauitfulSoup comprehension of an appropriate recipe and get in return a list of the following format:
         [
@@ -129,7 +135,7 @@ class MZConverter(BaseConverter):
             ing_text = 'n/a'
         return ing_text
 
-    def get_preparation(self, soup, convert_units=True):
+    def get_preparation(self, soup, convert_units=True) -> List[str]:
         """
         This function takes a soup of an appropriate recipe and returns the steps made into a list.
         Ingredients and units are converted from metric to imperial if convert_units is True

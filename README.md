@@ -179,5 +179,8 @@ The method to call:
 3. Dramatically reduced the size of the HTML files for the tests. Almost all of the tests were 100kb+ of bloatware. One was more than 600kb! Who needs that much for ONE RECIPE on their blog? I was worried about the approximately 200kb for my whole blog. Also I added tests for iamge identification for all the converters.
 4. Attached a third condition for GZConverter to look for the recipe image.
 
+0.2.1:
+1. Add type hinting for all functions/methods and better docstrings for the utility methods
+
 ## Why?
 I made this originally as several modules I would find useful for myself because I am often translating Italian recipes into English and changing the metric quantities in the recipe into imperial units. I saw it as an opportunity to release my first Python package. I tried to document and comment my code as best possible, but this is among my first projects that I have made completely on my own from the ground up. Feel free to contact me for any reason or put the issue on github/pull request/etc.

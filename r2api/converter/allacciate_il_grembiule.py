@@ -1,6 +1,12 @@
 import re
 from bs4 import BeautifulSoup
 
+from typing import (
+    List,
+    Union,
+    Tuple
+)
+
 from .base_converter import BaseConverter
 from ..utilities.unit_conversion import (
     convert_units_prep,
@@ -20,10 +26,10 @@ class AGConverter(BaseConverter):
     recipe['preparation']: list of the steps to make the recipe
     """
 
-    def get_title(self, soup):
+    def get_title(self, soup: BeautifulSoup) -> str:
         return soup.find("title").text
 
-    def get_image(self, soup):
+    def get_image(self, soup: BeautifulSoup) -> str:
         imgs = soup.find_all("img")
         title = soup.find("title").text.lower()
         # We'll have a fallback so the converter doesn't crash
@@ -34,7 +40,7 @@ class AGConverter(BaseConverter):
                 return img.attrs['src']
         return 'IMAGE_NOT_FOUND'
 
-    def get_ingredients(self, soup, convert_units = True):
+    def get_ingredients(self, soup: BeautifulSoup, convert_units: bool = True) -> List[Tuple[str, Union[int, float, str], str]]:
         """
         Pass a BeauitfulSoup comprehension of an appropriate recipe and get in return a list of the following format:
         [
@@ -147,7 +153,7 @@ class AGConverter(BaseConverter):
             
         return ingredients
 
-    def _translate_ingredient(self, name, quantity, unit):
+    def _translate_ingredient(self, name: str, quantity: Union[int, float], unit: str) -> List[Tuple[str, Union[int, float], str]]:
         """
         Converts a name, quantity and unit from metric to imperial units
         """
@@ -164,7 +170,7 @@ class AGConverter(BaseConverter):
             _quantity = int(_quantity)
         return [_name, _quantity, _unit] 
 
-    def get_preparation(self, soup, convert_units=True):
+    def get_preparation(self, soup: BeautifulSoup, convert_units: bool = True):
         """
         This function takes a soup of an appropriate recipe and returns the steps made into a list.
         Ingredients and units are converted from metric to imperial if convert_units is True
