@@ -1,4 +1,4 @@
-[![Build Status](https://app.travis-ci.com/benyakirten/r2api.svg?branch=master)](https://app.travis-ci.com/benyakirten/r2api)
+[![Unit Test on Push/PR](https://github.com/benyakirten/r2api/actions/workflows/test_on_upload.yml/badge.svg)](https://github.com/benyakirten/r2api/actions/workflows/test_on_upload.yml)
 
 # What is r2api?
 r<sub>ecipe</sub>2api is a Python package aimed at converting recipes on blogs without an external API into a Python dictionary/JSON object. As of now, it can only parse websites (reliably) for which there are converters.
