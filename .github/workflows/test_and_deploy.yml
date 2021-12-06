@@ -5,7 +5,7 @@ on:
     types: [ created ]
 
 jobs:
-  build:
+  test:
 
     runs-on: ubuntu-latest
     strategy:
@@ -26,10 +26,10 @@ jobs:
         run: |
           cd tests && python -m unittest
   
-  publish-pypi:
-    needs: build
+  publish:
+    needs: test
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
