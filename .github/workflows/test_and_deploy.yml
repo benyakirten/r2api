@@ -1,0 +1,33 @@
+name: Unit Test and Deploy to PyPi
+
+on:
+  release:
+    types: [ created ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.6
+      - run: python -m pip install --upgrade pip
+      - run: python -m pip install -r requirements.txt
+      - run: cd tests && python -m unittest
+  
+  publish-pypi:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.6
+      - run: python -m pip install --upgrade pip
+      - run: python -m pip install build --user
+      - run: python -m build --sdist --wheel --outdir dist/
+      - uses: pypa/gh-action-pypi-publish@master
+      - with:
+          password: ${{ secrets.PYPI_API_TOKEN }}

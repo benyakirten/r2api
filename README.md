@@ -181,6 +181,7 @@ The method to call:
 
 0.2.1:
 1. Add type hinting for all functions/methods and better docstrings for the utility methods
+2. Add Github actions for CI/CD instead of travis
 
 ## Why?
 I made this originally as several modules I would find useful for myself because I am often translating Italian recipes into English and changing the metric quantities in the recipe into imperial units. I saw it as an opportunity to release my first Python package. I tried to document and comment my code as best possible, but this is among my first projects that I have made completely on my own from the ground up. Feel free to contact me for any reason or put the issue on github/pull request/etc.
