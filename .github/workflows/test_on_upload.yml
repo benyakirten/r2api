@@ -1,4 +1,4 @@
-name: Unit Test on Push/PR
+name: Unit Tests
 
 on: [ push, pull_request ]
 

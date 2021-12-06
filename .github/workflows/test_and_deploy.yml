@@ -25,8 +25,8 @@ jobs:
       - name: Test with unit test
         run: |
           cd tests && python -m unittest
-  
   publish:
+
     needs: test
     runs-on: ubuntu-latest
 
@@ -35,11 +35,11 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: 3.6
-      - name: Build package
+      - name: Build Package
         run: |
           python -m pip install --upgrade pip
           python -m pip install build --user
           python -m build --sdist --wheel --outdir dist/
       - uses: pypa/gh-action-pypi-publish@master
-      - with:
+        with:
           password: ${{ secrets.PYPI_API_TOKEN }}
